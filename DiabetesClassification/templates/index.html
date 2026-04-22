@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetes Prediction System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <!-- ════════════════════════════════════════════ HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚕</span>
+        <div>
+          <h1>Diabetes Prediction System</h1>
+          <p class="subtitle">AI-powered screening &amp; clinical type classification</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge badge-rule">Stage 2: ADA 2023 Rules</span>
+        <span id="header-model-badge" class="badge badge-ml">Stage 1: Random Forest</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════ MAIN -->
+  <main class="container">
+
+    <!-- ── Approach Selector ── -->
+    <div class="approach-selector-wrapper">
+      <div class="approach-selector" id="approach-selector">
+
+        <button type="button" class="approach-btn active" data-approach="1" onclick="selectApproach(1)">
+          <div class="approach-btn-inner">
+            <span class="approach-num">1</span>
+            <div class="approach-text">
+              <strong>Approach 1</strong>
+              <span>Random Forest (Fixed)</span>
+            </div>
+            <span class="approach-tag">Baseline</span>
+          </div>
+          <p class="approach-desc">
+            Uses a pre-configured Random Forest Classifier (n=200 trees, depth=8,
+            class_weight=balanced). Directly trained and evaluated on the Pima dataset.
+          </p>
+        </button>
+
+        <button type="button" class="approach-btn" data-approach="2" id="btn-approach-2"
+                onclick="selectApproach(2)">
+          <div class="approach-btn-inner">
+            <span class="approach-num">2</span>
+            <div class="approach-text">
+              <strong>Approach 2</strong>
+              <span id="a2-model-name">Best Model (Auto-Selected)</span>
+            </div>
+            <span class="approach-tag approach-tag-2">Tournament</span>
+          </div>
+          <p class="approach-desc">
+            Trains 8 classifiers (RF, Gradient Boosting, SVM, KNN, etc.), evaluates
+            each by 5-Fold CV + test ROC-AUC, and selects the winner automatically.
+          </p>
+        </button>
+
+      </div>
+      <div id="a2-unavailable-note" class="a2-note" style="display:none">
+        ⚠ Approach 2 model not found.
+        Run <code>python train_comparison.py</code> then restart the server.
+      </div>
+    </div>
+
+    <!-- ── Info Banner (updates with approach) ── -->
+    <div class="info-banner" id="info-banner">
+      <strong>Approach 1 active.</strong>
+      Stage 1 uses a fixed Random Forest model for binary diabetes prediction.
+      Stage 2 applies ADA 2023 clinical rules to classify the diabetes type.
+      This system is for educational screening only.
+    </div>
+
+    <!-- ── Two-column layout: Form | Results ── -->
+    <div class="layout">
+
+      <!-- ══════════════════ INPUT FORM ══════════════════ -->
+      <section class="card form-card">
+        <h2 class="card-title">
+          <span class="step-badge">1</span>
+          Patient Data Input
+        </h2>
+
+        <form id="prediction-form">
+          <!-- Hidden: approach selection -->
+          <input type="hidden" id="selected-approach" name="approach" value="1">
+
+          <!-- Row: Pregnancies + Age -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="Pregnancies">Pregnancies <span class="hint">(0–20)</span></label>
+              <input type="number" id="Pregnancies" name="Pregnancies"
+                     min="0" max="20" step="1" value="1" class="form-input">
+              <span class="field-note">Times pregnant (enter 0 if male)</span>
+            </div>
+            <div class="form-group">
+              <label for="Age">Age <span class="hint">(years)</span> <span class="required">*</span></label>
+              <input type="number" id="Age" name="Age"
+                     min="1" max="120" step="1" value="30" class="form-input" required>
+              <span class="field-note">Patient age in years</span>
+            </div>
+          </div>
+
+          <!-- Glucose -->
+          <div class="form-group">
+            <label for="Glucose">Plasma Glucose <span class="hint">(mg/dL)</span> <span class="required">*</span></label>
+            <input type="number" id="Glucose" name="Glucose"
+                   min="50" max="300" step="0.1" value="120" class="form-input" required>
+            <div class="glucose-reference">
+              <span class="ref-item ref-normal">Normal &lt; 100</span>
+              <span class="ref-item ref-pre">Prediabetes 100–125</span>
+              <span class="ref-item ref-diabetic">Diabetic ≥ 126</span>
+            </div>
+          </div>
+
+          <!-- Row: BMI + BloodPressure -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="BMI">BMI <span class="hint">(kg/m²)</span> <span class="required">*</span></label>
+              <input type="number" id="BMI" name="BMI"
+                     min="10" max="70" step="0.1" value="25.0" class="form-input" required>
+              <span class="field-note">Normal: 18.5–24.9 | Obese: ≥ 30</span>
+            </div>
+            <div class="form-group">
+              <label for="BloodPressure">Blood Pressure <span class="hint">(mm Hg)</span></label>
+              <input type="number" id="BloodPressure" name="BloodPressure"
+                     min="40" max="130" step="1" value="72" class="form-input">
+              <span class="field-note">Diastolic. Normal: 60–80</span>
+            </div>
+          </div>
+
+          <!-- Row: Insulin + SkinThickness -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="Insulin">Serum Insulin <span class="hint">(mu U/ml)</span></label>
+              <input type="number" id="Insulin" name="Insulin"
+                     min="0" max="900" step="1" value="80" class="form-input">
+              <span class="field-note">2-hour serum. Enter 0 if unknown.</span>
+            </div>
+            <div class="form-group">
+              <label for="SkinThickness">Skin Thickness <span class="hint">(mm)</span></label>
+              <input type="number" id="SkinThickness" name="SkinThickness"
+                     min="0" max="99" step="1" value="20" class="form-input">
+              <span class="field-note">Triceps fold. Enter 0 if unknown.</span>
+            </div>
+          </div>
+
+          <!-- Diabetes Pedigree -->
+          <div class="form-group">
+            <label for="DiabetesPedigreeFunction">Diabetes Pedigree Function <span class="hint">(0.0–2.5)</span></label>
+            <input type="number" id="DiabetesPedigreeFunction"
+                   name="DiabetesPedigreeFunction"
+                   min="0.0" max="2.5" step="0.001" value="0.500" class="form-input">
+            <div class="dpf-guide">
+              <span class="ref-item ref-normal">Low &lt; 0.3</span>
+              <span class="ref-item ref-pre">Moderate 0.3–0.7</span>
+              <span class="ref-item ref-diabetic">High &gt; 0.7</span>
+            </div>
+            <span class="field-note">Family history risk score. Use 0.5 if unknown.</span>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-predict" id="submit-btn">
+            <span class="btn-icon">🔬</span>
+            <span id="submit-label">Analyze with Approach 1</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- ══════════════════ RESULTS ══════════════════ -->
+      <section class="card result-card" id="result-section">
+
+        <div id="result-placeholder" class="placeholder-state">
+          <div class="placeholder-icon">📋</div>
+          <h3>Awaiting Analysis</h3>
+          <p>Select an approach, fill in patient data, and click Analyze.</p>
+          <div class="placeholder-steps">
+            <div class="p-step"><span class="p-num">1</span><span>Choose Approach 1 (RF) or Approach 2 (Tournament)</span></div>
+            <div class="p-step"><span class="p-num">2</span><span>ML model predicts Diabetic / Non-Diabetic</span></div>
+            <div class="p-step"><span class="p-num">3</span><span>Clinical rules classify diabetes type</span></div>
+          </div>
+        </div>
+
+        <div id="result-loading" class="loading-state" style="display:none">
+          <div class="spinner"></div>
+          <p>Analyzing patient data...</p>
+        </div>
+
+        <div id="result-error" class="error-state" style="display:none">
+          <div class="error-icon">⚠</div>
+          <h3>Error</h3>
+          <p id="error-message"></p>
+        </div>
+
+        <div id="result-content" style="display:none">
+
+          <h2 class="card-title">
+            <span class="step-badge">2</span>
+            Prediction Results
+          </h2>
+
+          <!-- Approach + Model tag -->
+          <div id="active-approach-tag" class="active-approach-tag"></div>
+
+          <!-- Stage 1 -->
+          <div class="result-section">
+            <h3 class="result-section-title">Stage 1 — ML Prediction</h3>
+            <div id="prediction-banner" class="prediction-banner"></div>
+            <div class="metric-row">
+              <div class="metric-box">
+                <span class="metric-label">Model Used</span>
+                <span id="model-used" class="metric-value"></span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">Model Confidence</span>
+                <span id="model-confidence" class="metric-value"></span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">Probability</span>
+                <span id="probability" class="metric-value"></span>
+              </div>
+            </div>
+            <div class="prob-bar-container">
+              <div class="prob-bar-labels">
+                <span>Non-Diabetic</span>
+                <span>Diabetic</span>
+              </div>
+              <div class="prob-bar-track">
+                <div id="prob-bar-fill" class="prob-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div id="type-section" class="result-section" style="display:none">
+            <h3 class="result-section-title">Stage 2 — Diabetes Type Classification</h3>
+            <div id="diabetes-type-banner" class="type-banner"></div>
+            <div class="rules-box">
+              <h4>Clinical Rules Applied:</h4>
+              <ul id="rules-list"></ul>
+            </div>
+            <div class="description-box">
+              <h4>Clinical Description:</h4>
+              <p id="clinical-description"></p>
+            </div>
+          </div>
+
+          <!-- Risk + Recommendations -->
+          <div class="risk-message-box" id="risk-box">
+            <p id="risk-message"></p>
+          </div>
+          <div class="result-section">
+            <h3 class="result-section-title">Recommendations</h3>
+            <ul id="recommendations-list" class="recommendations-list"></ul>
+          </div>
+
+          <!-- ICD Code -->
+          <div id="icd-box" class="icd-box" style="display:none">
+            <span class="icd-label">ICD-10 Code:</span>
+            <span id="icd-code" class="icd-code"></span>
+          </div>
+
+          <div class="disclaimer">
+            ⚠ <strong>Medical Disclaimer:</strong> Educational screening tool only.
+            Not a substitute for professional medical diagnosis.
+          </div>
+
+          <button class="btn-reset" onclick="resetForm()">← Analyze Another Patient</button>
+        </div>
+      </section>
+
+    </div><!-- end .layout -->
+
+    <!-- ══════════════════ COMPARISON TABLE (Approach 2) ══════════════════ -->
+    <div id="comparison-section" class="card comparison-card" style="display:none">
+
+      <div class="comparison-header">
+        <h3>
+          <span class="step-badge step-badge-sm">2</span>
+          Approach 2 — Model Tournament Results
+        </h3>
+        <button class="btn-collapse" id="collapse-btn" onclick="toggleComparison()">Hide ▲</button>
+      </div>
+
+      <p class="comparison-subtitle">
+        All 8 models trained on the same data, evaluated by 5-Fold CV + held-out test set.
+        Winner selected by highest Test ROC-AUC.
+      </p>
+
+      <div id="comparison-body">
+        <div id="comparison-loading" style="text-align:center;padding:1.5rem;color:#718096">
+          Loading comparison results...
+        </div>
+        <div id="comparison-table-wrapper" style="display:none">
+          <div class="table-scroll">
+            <table class="comparison-table" id="comparison-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Model</th>
+                  <th>CV-AUC (mean±std)</th>
+                  <th>Test AUC</th>
+                  <th>Accuracy</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>F1-Score</th>
+                  <th>MCC</th>
+                  <th>Train Time</th>
+                </tr>
+              </thead>
+              <tbody id="comparison-tbody"></tbody>
+            </table>
+          </div>
+          <p class="table-note">
+            ★ Winner | Selection criterion: Test ROC-AUC |
+            Higher Recall = fewer missed diagnoses (medically critical).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ SYSTEM INFO ══════════════════ -->
+    <div class="system-info-card">
+      <h3>System Architecture</h3>
+      <div class="arch-grid">
+        <div class="arch-item">
+          <strong>Approach 1</strong>
+          <span>Random Forest (n=200, depth=8, class_weight=balanced)</span>
+        </div>
+        <div class="arch-item">
+          <strong>Approach 2</strong>
+          <span>8-model tournament → best by ROC-AUC selected</span>
+        </div>
+        <div class="arch-item">
+          <strong>Dataset</strong>
+          <span>Pima Indians Diabetes (768 patients, 8 features)</span>
+        </div>
+        <div class="arch-item">
+          <strong>Stage 2 (Both)</strong>
+          <span>Rule-based engine — ADA 2023 clinical guidelines</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Diabetes Prediction & Classification System | Final Year Project |
+       Python · Scikit-learn · Flask</p>
+  </footer>
+
+  <!-- ════════════════════════════════════════════ SCRIPT -->
+  <script>
+    // ── State ──────────────────────────────────────────────────────
+    let currentApproach = 1;
+    let approach2Available = false;
+    let comparisonLoaded = false;
+    let comparisonVisible = true;
+
+    // ── Initialise on load ─────────────────────────────────────────
+    window.addEventListener("DOMContentLoaded", async () => {
+      await checkModelStatus();
+    });
+
+    async function checkModelStatus() {
+      try {
+        const res = await fetch("/api/model_status");
+        const data = await res.json();
+        approach2Available = data.approach2.available;
+
+        const btn2 = document.getElementById("btn-approach-2");
+        const note = document.getElementById("a2-unavailable-note");
+
+        if (approach2Available) {
+          btn2.classList.remove("approach-btn-disabled");
+          const modelName = data.approach2.model_name || "Best Model";
+          document.getElementById("a2-model-name").textContent =
+            modelName + " (Auto-Selected)";
+          note.style.display = "none";
+        } else {
+          btn2.classList.add("approach-btn-disabled");
+          note.style.display = "block";
+        }
+      } catch (_) {
+        // Server might not be fully up yet — ignore
+      }
+    }
+
+    // ── Approach Selector ──────────────────────────────────────────
+    function selectApproach(num) {
+      if (num === 2 && !approach2Available) return;
+
+      currentApproach = num;
+
+      // Update button states
+      document.querySelectorAll(".approach-btn").forEach(btn => {
+        btn.classList.toggle("active", parseInt(btn.dataset.approach) === num);
+      });
+
+      // Update hidden input
+      document.getElementById("selected-approach").value = num;
+
+      // Update submit button label
+      document.getElementById("submit-label").textContent =
+        num === 1 ? "Analyze with Approach 1" : "Analyze with Approach 2";
+
+      // Update header badge
+      const badge = document.getElementById("header-model-badge");
+      if (num === 1) {
+        badge.textContent = "Stage 1: Random Forest";
+        badge.className = "badge badge-ml";
+      } else {
+        const name = document.getElementById("a2-model-name").textContent;
+        badge.textContent = "Stage 1: " + name;
+        badge.className = "badge badge-ml badge-ml-a2";
+      }
+
+      // Update info banner
+      const banner = document.getElementById("info-banner");
+      if (num === 1) {
+        banner.innerHTML = "<strong>Approach 1 active.</strong> " +
+          "Stage 1 uses a fixed Random Forest model. " +
+          "Stage 2 applies ADA 2023 clinical rules for type classification.";
+      } else {
+        const name = document.getElementById("a2-model-name").textContent;
+        banner.innerHTML = `<strong>Approach 2 active.</strong> ` +
+          `Stage 1 uses <strong>${name}</strong> — ` +
+          `the winner of an 8-model tournament selected by Test ROC-AUC. ` +
+          `Stage 2 applies the same ADA 2023 clinical rules.`;
+      }
+
+      // Show/hide comparison section for Approach 2
+      if (num === 2) {
+        document.getElementById("comparison-section").style.display = "block";
+        if (!comparisonLoaded) loadComparisonTable();
+      }
+
+      resetForm();
+    }
+
+    // ── Comparison table ───────────────────────────────────────────
+    function toggleComparison() {
+      comparisonVisible = !comparisonVisible;
+      document.getElementById("comparison-body").style.display =
+        comparisonVisible ? "block" : "none";
+      document.getElementById("collapse-btn").textContent =
+        comparisonVisible ? "Hide ▲" : "Show ▼";
+    }
+
+    async function loadComparisonTable() {
+      if (comparisonLoaded) return;
+      try {
+        const res = await fetch("/api/comparison_results");
+        if (!res.ok) {
+          document.getElementById("comparison-loading").textContent =
+            "Run python train_comparison.py to see results here.";
+          return;
+        }
+        const data = await res.json();
+        renderComparisonTable(data);
+        comparisonLoaded = true;
+      } catch (e) {
+        document.getElementById("comparison-loading").textContent =
+          "Could not load comparison results.";
+      }
+    }
+
+    function renderComparisonTable(data) {
+      const tbody = document.getElementById("comparison-tbody");
+      tbody.innerHTML = "";
+
+      data.models.forEach((m, idx) => {
+        const rank = idx + 1;
+        const tr = document.createElement("tr");
+        if (m.is_best) tr.className = "row-best";
+
+        tr.innerHTML = `
+          <td class="cell-rank">${m.is_best ? "★" : rank}</td>
+          <td class="cell-name">${m.is_best ? "<strong>" + m.name + "</strong>" : m.name}</td>
+          <td>${m.cv_auc_mean.toFixed(3)} ± ${m.cv_auc_std.toFixed(3)}</td>
+          <td class="cell-auc ${m.is_best ? "cell-best" : ""}">${m.test_auc.toFixed(4)}</td>
+          <td>${(m.test_accuracy * 100).toFixed(1)}%</td>
+          <td>${(m.test_precision * 100).toFixed(1)}%</td>
+          <td class="${m.is_best ? 'cell-recall-best' : ''}">${(m.test_recall * 100).toFixed(1)}%</td>
+          <td>${(m.test_f1 * 100).toFixed(1)}%</td>
+          <td>${m.test_mcc.toFixed(3)}</td>
+          <td>${m.train_time_s.toFixed(3)}s</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("comparison-loading").style.display = "none";
+      document.getElementById("comparison-table-wrapper").style.display = "block";
+    }
+
+    // ── Prediction ─────────────────────────────────────────────────
+    document.getElementById("prediction-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await runPrediction();
+    });
+
+    async function runPrediction() {
+      setView("loading");
+      const formData = new FormData(document.getElementById("prediction-form"));
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+
+        if (!res.ok || result.status === "error") {
+          showError(result.message || "Unknown error.");
+          return;
+        }
+        displayResult(result);
+      } catch (err) {
+        showError("Network error — is the Flask server running?");
+      }
+    }
+
+    function displayResult(r) {
+      const isDiabetic = r.prediction === "Diabetic";
+
+      // Approach tag
+      const tag = document.getElementById("active-approach-tag");
+      tag.textContent = r.approach_label;
+      tag.className = "active-approach-tag " +
+        (r.approach === 2 ? "approach-tag-active-2" : "approach-tag-active-1");
+
+      // Prediction banner
+      const banner = document.getElementById("prediction-banner");
+      banner.className = "prediction-banner " + (isDiabetic ? "banner-diabetic" : "banner-healthy");
+      banner.innerHTML = isDiabetic
+        ? `<span class="banner-icon">⚠</span> <strong>DIABETIC</strong> — Positive screening result`
+        : `<span class="banner-icon">✓</span> <strong>NON-DIABETIC</strong> — Negative screening result`;
+
+      // Metrics row
+      document.getElementById("model-used").textContent = r.model_name;
+      document.getElementById("model-confidence").textContent = r.model_confidence;
+      document.getElementById("probability").textContent = r.probability + "%";
+
+      // Prob bar
+      const fill = document.getElementById("prob-bar-fill");
+      fill.style.width = r.probability + "%";
+      fill.className = "prob-bar-fill " + (isDiabetic ? "fill-diabetic" : "fill-healthy");
+
+      // Stage 2
+      const typeSection = document.getElementById("type-section");
+      if (isDiabetic && r.diabetes_type) {
+        typeSection.style.display = "block";
+        const typeBanner = document.getElementById("diabetes-type-banner");
+        typeBanner.textContent = r.diabetes_type;
+        typeBanner.className = "type-banner type-" +
+          r.diabetes_type.replace(/\s+/g, "-").toLowerCase();
+
+        const rulesList = document.getElementById("rules-list");
+        rulesList.innerHTML = "";
+        (r.rules_matched || []).forEach(rule => {
+          const li = document.createElement("li");
+          li.textContent = rule;
+          rulesList.appendChild(li);
+        });
+
+        document.getElementById("clinical-description").textContent =
+          r.clinical_description || "";
+
+        if (r.icd_code) {
+          document.getElementById("icd-code").textContent = r.icd_code;
+          document.getElementById("icd-box").style.display = "flex";
+        }
+      } else {
+        typeSection.style.display = "none";
+        document.getElementById("icd-box").style.display = "none";
+      }
+
+      // Risk message
+      document.getElementById("risk-message").textContent = r.risk_message || "";
+      const riskBox = document.getElementById("risk-box");
+      riskBox.className = "risk-message-box " + (isDiabetic ? "risk-high" : "risk-low");
+
+      // Recommendations
+      const recList = document.getElementById("recommendations-list");
+      recList.innerHTML = "";
+      (r.recommendations || []).forEach(rec => {
+        const li = document.createElement("li");
+        li.textContent = rec;
+        recList.appendChild(li);
+      });
+
+      setView("result");
+    }
+
+    function showError(msg) {
+      document.getElementById("error-message").textContent = msg;
+      setView("error");
+    }
+
+    function setView(view) {
+      document.getElementById("result-placeholder").style.display =
+        view === "placeholder" ? "block" : "none";
+      document.getElementById("result-loading").style.display =
+        view === "loading" ? "flex" : "none";
+      document.getElementById("result-error").style.display =
+        view === "error" ? "block" : "none";
+      document.getElementById("result-content").style.display =
+        view === "result" ? "block" : "none";
+    }
+
+    function resetForm() {
+      setView("placeholder");
+    }
+  </script>
+</body>
+</html>

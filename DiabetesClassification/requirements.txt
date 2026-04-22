@@ -1,0 +1,24 @@
+# ============================================================
+# Diabetes Classification System — Dependencies
+# Python 3.11.4 tested | Python 3.10+ required
+# Install with: pip install -r requirements.txt
+# ============================================================
+
+# Core data science
+pandas==2.2.2
+numpy==1.26.4          # Last stable 1.x — avoids numpy 2.x breaking changes
+
+# Machine learning
+scikit-learn==1.5.1
+joblib==1.4.2
+
+# Visualization
+matplotlib==3.8.4          # 3.9.x triggers source build on old pip; 3.8.x has wheels
+seaborn==0.13.2
+
+# Web framework
+flask==3.0.3
+flask-cors==4.0.1
+
+# Utilities
+Werkzeug==3.0.3

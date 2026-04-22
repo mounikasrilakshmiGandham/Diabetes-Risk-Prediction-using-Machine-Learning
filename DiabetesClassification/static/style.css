@@ -1,0 +1,864 @@
+/* ================================================================
+   DIABETES PREDICTION SYSTEM — STYLESHEET
+   Clean, professional medical UI theme
+   ================================================================ */
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f0f4f8;
+  color: #1a202c;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+  color: white;
+  padding: 1.2rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.header-badge {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.badge-ml   { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); }
+.badge-rule { background: rgba(76,175,80,0.3);  border: 1px solid rgba(76,175,80,0.6); }
+
+/* ── Main Container ── */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* ── Info Banner ── */
+.info-banner {
+  background: #E3F2FD;
+  border-left: 4px solid #1565C0;
+  border-radius: 6px;
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.88rem;
+  color: #0D47A1;
+  line-height: 1.5;
+}
+
+/* ── Two-Column Layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ── Cards ── */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.step-badge {
+  background: #1565C0;
+  color: white;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Form ── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.35rem;
+}
+
+.hint {
+  font-weight: 400;
+  color: #718096;
+  font-size: 0.8rem;
+}
+
+.required { color: #e53e3e; margin-left: 2px; }
+
+.form-input {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #cbd5e0;
+  border-radius: 7px;
+  font-size: 0.95rem;
+  color: #1a202c;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1565C0;
+  box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+}
+
+.form-input:hover { border-color: #90cdf4; }
+
+.field-note {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 0.3rem;
+}
+
+/* Glucose reference row */
+.glucose-reference, .dpf-guide {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ref-item {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.ref-normal  { background: #C8E6C9; color: #1B5E20; }
+.ref-pre     { background: #FFF9C4; color: #F57F17; }
+.ref-diabetic{ background: #FFCDD2; color: #B71C1C; }
+
+/* ── Submit Button ── */
+.btn-predict {
+  width: 100%;
+  padding: 0.9rem;
+  background: linear-gradient(135deg, #1565C0, #0D47A1);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.3px;
+}
+
+.btn-predict:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(21,101,192,0.4);
+}
+
+.btn-predict:active { transform: translateY(0); }
+
+.btn-icon { font-size: 1.1rem; }
+
+/* ── Result Card States ── */
+.placeholder-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #718096;
+}
+
+.placeholder-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.placeholder-state h3 { color: #4a5568; margin-bottom: 0.5rem; }
+
+.placeholder-steps {
+  margin-top: 1.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.p-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.p-num {
+  background: #EBF4FF;
+  color: #1565C0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Loading spinner */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+  color: #718096;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #1565C0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Error state */
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  color: #C53030;
+}
+
+.error-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+/* ── Prediction Banner ── */
+.prediction-banner {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner-diabetic {
+  background: #FFF5F5;
+  border: 2px solid #FC8181;
+  color: #C53030;
+}
+
+.banner-healthy {
+  background: #F0FFF4;
+  border: 2px solid #68D391;
+  color: #276749;
+}
+
+.banner-icon { font-size: 1.3rem; }
+
+/* ── Metrics ── */
+.metric-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metric-box {
+  flex: 1;
+  background: #F7FAFC;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metric-label { font-size: 0.75rem; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { font-size: 1.1rem; font-weight: 700; color: #1a202c; }
+
+/* ── Probability Bar ── */
+.prob-bar-container { margin-bottom: 1.25rem; }
+
+.prob-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 0.3rem;
+}
+
+.prob-bar-track {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.prob-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+.fill-diabetic { background: linear-gradient(90deg, #FC8181, #E53E3E); }
+.fill-healthy  { background: linear-gradient(90deg, #68D391, #276749); }
+
+/* ── Result Sections ── */
+.result-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.result-section:last-of-type { border-bottom: none; }
+
+.result-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Type Banner ── */
+.type-banner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.type-prediabetes          { background: #FFF9C4; color: #F57F17; border: 2px solid #F9A825; }
+.type-gestational-diabetes { background: #E8F5E9; color: #2E7D32; border: 2px solid #66BB6A; }
+.type-type-1-diabetes      { background: #FFF3E0; color: #E65100; border: 2px solid #FFA726; }
+.type-type-2-diabetes      { background: #FFEBEE; color: #C62828; border: 2px solid #EF9A9A; }
+
+/* ── Rules & Description boxes ── */
+.rules-box, .description-box {
+  background: #F7FAFC;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.rules-box h4, .description-box h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.rules-box ul { padding-left: 1.25rem; }
+.rules-box li { margin-bottom: 0.3rem; color: #2d3748; }
+
+/* ── Risk Message ── */
+.risk-message-box {
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  border-left: 4px solid;
+}
+
+.risk-high { background: #FFF5F5; border-color: #FC8181; color: #742A2A; }
+.risk-low  { background: #F0FFF4; border-color: #68D391; color: #1C4532; }
+
+/* Default risk message box */
+.risk-message-box { background: #EBF8FF; border-color: #63B3ED; color: #2A4365; }
+
+/* ── Recommendations ── */
+.recommendations-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recommendations-list li {
+  padding: 0.5rem 0.75rem;
+  background: #F7FAFC;
+  border-left: 3px solid #1565C0;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.875rem;
+  color: #2d3748;
+}
+
+/* ── ICD Code ── */
+.icd-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.9rem;
+  background: #EBF4FF;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.icd-label { color: #718096; font-size: 0.78rem; }
+.icd-code  { font-weight: 700; color: #1565C0; font-family: monospace; font-size: 1rem; }
+
+/* ── Disclaimer ── */
+.disclaimer {
+  font-size: 0.78rem;
+  color: #718096;
+  background: #FFFBEB;
+  border: 1px solid #F6E05E;
+  border-radius: 6px;
+  padding: 0.7rem 0.9rem;
+  margin: 1rem 0;
+  line-height: 1.5;
+}
+
+/* ── Reset Button ── */
+.btn-reset {
+  background: none;
+  border: 1.5px solid #cbd5e0;
+  color: #4a5568;
+  padding: 0.6rem 1.2rem;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  border-color: #1565C0;
+  color: #1565C0;
+  background: #EBF4FF;
+}
+
+/* ── System Info Card ── */
+.system-info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.system-info-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.arch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.arch-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: #F7FAFC;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.arch-item strong {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1565C0;
+}
+
+.arch-item span { font-size: 0.83rem; color: #4a5568; }
+
+/* ── Footer ── */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #718096;
+  font-size: 0.82rem;
+  margin-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  background: white;
+}
+
+/* ================================================================
+   APPROACH 2 — NEW STYLES
+   ================================================================ */
+
+/* ── Header badge variant for Approach 2 ── */
+.badge-ml-a2 {
+  background: rgba(76,175,80,0.3);
+  border: 1px solid rgba(76,175,80,0.6);
+}
+
+/* ── Approach Selector ── */
+.approach-selector-wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.approach-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .approach-selector { grid-template-columns: 1fr; }
+}
+
+.approach-btn {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+
+.approach-btn:hover:not(.approach-btn-disabled) {
+  border-color: #90cdf4;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.1);
+}
+
+.approach-btn.active {
+  border-color: #1565C0;
+  background: #EBF4FF;
+  box-shadow: 0 2px 10px rgba(21,101,192,0.15);
+}
+
+.approach-btn.approach-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9f9f9;
+}
+
+.approach-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.approach-num {
+  background: #1565C0;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.approach-btn.active .approach-num {
+  background: #0D47A1;
+}
+
+.approach-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.approach-text strong {
+  font-size: 0.95rem;
+  color: #1a202c;
+}
+
+.approach-text span {
+  font-size: 0.78rem;
+  color: #718096;
+}
+
+.approach-tag {
+  background: #EBF4FF;
+  color: #1565C0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.approach-tag-2 {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.approach-desc {
+  font-size: 0.78rem;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0;
+  padding-left: 2.8rem;
+}
+
+/* Unavailable note */
+.a2-note {
+  font-size: 0.82rem;
+  color: #744210;
+  background: #FFFBEB;
+  border: 1px solid #F6E05E;
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+}
+
+.a2-note code {
+  background: #FEF3C7;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+/* ── Active approach tag in results ── */
+.active-approach-tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.9rem;
+}
+
+.approach-tag-active-1 {
+  background: #EBF4FF;
+  color: #1565C0;
+  border: 1px solid #BEE3F8;
+}
+
+.approach-tag-active-2 {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #A5D6A7;
+}
+
+/* ── Model Used metric box ── */
+.metric-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.metric-row .metric-box {
+  flex: 1;
+  min-width: 90px;
+}
+
+/* ── Comparison Section ── */
+.comparison-card {
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.comparison-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.comparison-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-badge-sm {
+  width: 22px;
+  height: 22px;
+  font-size: 0.72rem;
+}
+
+.btn-collapse {
+  background: none;
+  border: 1px solid #e2e8f0;
+  color: #718096;
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+
+.btn-collapse:hover {
+  border-color: #1565C0;
+  color: #1565C0;
+}
+
+.comparison-subtitle {
+  font-size: 0.82rem;
+  color: #718096;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* ── Comparison Table ── */
+.table-scroll {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 750px;
+}
+
+.comparison-table thead tr {
+  background: #F7FAFC;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.comparison-table th {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font-weight: 700;
+  color: #4a5568;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.comparison-table td {
+  padding: 0.6rem 0.75rem;
+  color: #2d3748;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+.comparison-table tbody tr:hover {
+  background: #F7FAFC;
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Best row highlighting */
+.row-best {
+  background: #EBF4FF !important;
+  border-left: 3px solid #1565C0;
+}
+
+.cell-rank {
+  font-weight: 700;
+  color: #F59E0B;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.row-best .cell-rank { color: #1565C0; }
+
+.cell-name { min-width: 150px; }
+.cell-auc  { font-weight: 700; }
+.cell-best { color: #1565C0; }
+.cell-recall-best { color: #1565C0; font-weight: 700; }
+
+.table-note {
+  font-size: 0.75rem;
+  color: #718096;
+  padding: 0.6rem 0.5rem 0;
+  line-height: 1.5;
+}
